@@ -16,7 +16,7 @@ define('SITE_TITLE', 'Przemek MVC Framework');	// This will be used if no site t
 
 define('PROOT', 'http://localhost/files/Eclipse_Workspace/MVC_Framework/main/');	// Set this to '/' for a live server
 
-define('CURRENT_USER_SESSION_NAME', 'Hd";_c5%yX>\PGzb[`&[Z+?u5N8X&.Bpm4)Dykm3vaBz8)[C{ULgB#s:cgT');	// Session name for logged in user
-define('REMEMBER_ME_COOKIE_NAME', 'A2&w`:F.^w"+mu\=DB3b8{C?9X*A,q$vF[VF*R?C/NHb}DP%-965s5x`*Kjy');	// Cookie name for logged in user 'remember me'
+define('CURRENT_USER_SESSION_NAME', 'HdctykKfb6eku23hj83gT');	// Session name for logged in user
+define('REMEMBER_ME_COOKIE_NAME', 'A2h8sl4Wk19jdlDIWbbzi');	// Cookie name for logged in user 'remember me'
 define('REMEMBER_ME_COOKIE_EXPIRY', 604800);	// Time in seconds for 'remember me' cookie to live (30 days)
 

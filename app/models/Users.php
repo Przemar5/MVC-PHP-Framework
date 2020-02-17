@@ -46,22 +46,27 @@ class Users extends Model
 	
 	public function findByUsername($username)
 	{
-		$user = $this->findFirst([
+		return $this->findFirst([
 			'conditions' => 'username = ?',
 			'bind' => [$username]
 		]);
 	}
 	
-	public function login($rememberMe = false)
+	public function login($rememberMe = false, $userId)
 	{
-		Session::set($this->_sessionName, $this->id);
+		// Temp, becouse of a bug
+		$this->_sessionName = CURRENT_USER_SESSION_NAME;
+		$this->_cookieName = REMEMBER_ME_COOKIE_NAME;
+		// END
+		
+		Session::set($this->_sessionName, $userId);
 		
 		if ($rememberMe)
 		{
 			$hash = md5(uniqid() + rand(0, 100));
 			$user_agent = Session::uagent_no_version();
 			
-			Cookie::set($this->_cookeiName, $hash, REMEMBER_COOKIE_EXPIRY);
+			Cookie::set($this->_cookieName, $hash, REMEMBER_COOKIE_EXPIRY);
 			
 			$fields = [
 				'session' => $hash,

@@ -51,9 +51,13 @@ class Model
 	{
 		$resultsQuery = $this->_db->findFirst($this->_table, $params);
 		$result = new $this->_modelName($this->_table);
-		$result->populateObjData($resultQuery);
 		
-		return $result;
+		if ($resultsQuery) 
+		{
+			$result->populateObjData($resultsQuery);
+		}
+		
+		return $resultsQuery;
 	}
 	
 	public function findById($id)

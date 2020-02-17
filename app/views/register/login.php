@@ -2,8 +2,12 @@
 <?php $this->end(); ?>
 
 <?php $this->start('body'); ?>
-<div class="col-md-6 offset-md-3 card">
+<div class="col-md-6 offset-md-3 card bg-light">
 	<form action="<?php echo PROOT; ?>register/login" method="post" class="form card-body">
+		<div>
+			<?php echo $this->displayErrors; ?>
+		</div>
+		
 		<h3 class="text-center">Log In</h3>
 		
 		<div class="form-group">

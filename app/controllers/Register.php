@@ -13,12 +13,24 @@ class Register extends Controller
 	
 	public function loginAction()
 	{
+		$validation = new Validate;
+		
 		if ($_POST)
 		{
-			dnd($_POST);
-			$validation = true;
+			// Form validation
+			$validation->check($_POST, [
+				'username' => [
+					'display' => 'Username',
+					'required' => true
+				],
+				'password' => [
+					'display' => 'Password',
+					'required' => true,
+					'min' => 6
+				]
+			]);
 			
-			if ($validation === true)
+			if ($validation->passed())
 			{
 				$user = $this->UsersModel->findByUsername($_POST['username']);
 				
@@ -26,13 +38,19 @@ class Register extends Controller
 				{
 					$remember = (isset($_POST['remember_me']) && Input::get('remember_me'))
 						? true : false;
-					$user->login($remember);
-					
+					$this->UsersModel->login($remember, $user->id);
+//					$user->login($remember);
+					echo 'GOOD';die;
 					Router::redirect('');
+				}
+				else 
+				{
+					$validation->addError('There is an error with your username or password.');
 				}
 			}
 		}
 		
+		$this->view->displayErrors = $validation->displayErrors();
 		$this->view->render('register/login');
 	}
 }
