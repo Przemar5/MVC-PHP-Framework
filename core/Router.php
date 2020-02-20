@@ -15,6 +15,15 @@ class Router
 		$actionName = $action;
 		array_shift($url);
 		
+		//acl check
+		$grantAccess = self::hasAccess($controllerName, $actionName);
+		
+		if (!$grantAccess)
+		{
+			$controller_name = $controller = ACCESS_RESTRICTED;
+			$action = 'IndexAction';
+		}
+		
 		// Params
 		$queryParams = $url;
 		
@@ -47,5 +56,25 @@ class Router
 			echo '</noscript>';
 			exit;
 		}
+	}
+	
+	public static function hasAccess($controllerName, $actionName = 'index')
+	{
+		
+		$aclFile = file_get_contents(ROOT . DS . 'app' . DS . 'acl.json');
+		$acl = preg_replace('/(\n|\r|\t|\0)/', '', $aclFile);
+		$test = $acl;
+		$acl = json_decode(str_replace(chr(127), "", $acl), true);
+		
+		echo strlen($aclFile) . "<br>";
+		echo json_last_error_msg();
+		echo gettype($aclFile);
+		echo gettype($acl);
+		echo $acl . "<br>";
+		
+//		$test = json_decode('{"a":2}');
+//		dnd($test);
+		
+		dnd($acl);
 	}
 }

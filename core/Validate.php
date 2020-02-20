@@ -60,7 +60,7 @@ class Validate
 							{
 								$match = $items[$ruleValue]['display'];
 								$this->addError([
-									$matchDisplay . ' and ' . $display . ' must match.',
+									$match . ' and ' . $display . ' must match.',
 									$item
 								]);
 							}
@@ -120,7 +120,7 @@ class Validate
 		
 		if (empty($this->_errors)) 
 		{
-			$this->passed = true;
+			$this->_passed = true;
 		}
 		
 		return $this;

@@ -18,5 +18,6 @@ define('PROOT', 'http://localhost/files/Eclipse_Workspace/MVC_Framework/main/');
 
 define('CURRENT_USER_SESSION_NAME', 'HdctykKfb6eku23hj83gT');	// Session name for logged in user
 define('REMEMBER_ME_COOKIE_NAME', 'A2h8sl4Wk19jdlDIWbbzi');	// Cookie name for logged in user 'remember me'
-define('REMEMBER_ME_COOKIE_EXPIRY', 604800);	// Time in seconds for 'remember me' cookie to live (30 days)
+define('REMEMBER_ME_COOKIE_EXPIRY', 2592000);	// Time in seconds for 'remember me' cookie to live (30 days)
 
+define('ACCESS_RESTRICTED', 'Restricted');	// Controller name for the restricted redirect

@@ -13,6 +13,8 @@ class DB
 		{
 			$dsn = DB_TYPE . ':host=' . DB_HOST . ';dbname=' . DB_NAME . ';';
 			$this->_pdo = new PDO($dsn, DB_USER, DB_PASSWORD);
+			$this->_pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 		}
 		catch (PDOException $e)
 		{
@@ -50,7 +52,6 @@ class DB
 			if ($this->_query->execute())
 			{
 				$this->_result = $this->_query->fetchAll(PDO::FETCH_OBJ);
-//				dnd($this->_result);
 				$this->_count = $this->_query->rowCount();
 				$this->_lastInsertId = $this->_pdo->lastInsertId();
 			}

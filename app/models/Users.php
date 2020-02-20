@@ -7,7 +7,7 @@ class Users extends Model
 	public static $currentLoggedInUser = null;
 	
 	
-	public function _construct($user = '')
+	public function __construct($user = '')
 	{
 		$table = 'users';
 		
@@ -52,34 +52,100 @@ class Users extends Model
 		]);
 	}
 	
-	public function login($rememberMe = false, $userId)
+	public static function currentLoggedInUser()
+	{
+		if (!isset(self::$currentLoggedInUser) && Session::exists(CURRENT_USER_SESSION_NAME))
+		{
+			$u = new Users((int) Session::get(CURRENT_USER_SESSION_NAME));
+			self::$currentLoggedInUser = $u;
+		}
+		
+		return self::$currentLoggedInUser;
+	}
+	
+	public function login($rememberMe = false, $userId = null)
 	{
 		// Temp, becouse of a bug
 		$this->_sessionName = CURRENT_USER_SESSION_NAME;
 		$this->_cookieName = REMEMBER_ME_COOKIE_NAME;
 		// END
+		$this->id = $userId;
 		
 		Session::set($this->_sessionName, $userId);
 		
 		if ($rememberMe)
 		{
-			$hash = md5(uniqid() + rand(0, 100));
+			$hash = md5(uniqid() . floor(rand(0, 100)));
 			$user_agent = Session::uagent_no_version();
-			
-			Cookie::set($this->_cookieName, $hash, REMEMBER_COOKIE_EXPIRY);
-			
+			Cookie::set($this->_cookieName, $hash, REMEMBER_ME_COOKIE_EXPIRY);
+
 			$fields = [
 				'session' => $hash,
 				'user_agent' => $user_agent,
-				'user_id' => $this->id,
+				'user_id' => $userId,
 			];
 			$this->_db->query(
 				'DELETE FROM user_sessions WHERE user_id = ? AND user_agent = ?',
 				[
-					$this->id,
+					$userId,
 					$user_agent
 				]);
 			$this->_db->insert('user_sessions', $fields);
 		}
+	}
+	
+	public static function loginUserFromCookie()
+	{
+		$userSession = UserSessions::getFromCookie();
+		
+//		$user_session_model = new UserSessions();
+//		$user_session = $user_session_model->findFirst([
+//			'conditions' => 'user_agent = ? AND session = ?',
+//			'bind' => [
+//				Session::uagent_no_version(), 
+//				Cookie::get(REMEMBER_ME_COOKIE_NAME)
+//			],
+//		]);
+		
+		if ($userSession->user_id != '')
+		{
+			$user = new self((int) $userSession->user_id);
+		}
+		
+		if ($user)
+		{
+			$user->login();
+
+			return $user;
+		}
+	}
+	
+	public function logout()
+	{
+		$userSession = UserSessions::getFromCookie();
+		
+		if ($userSession)
+		{
+			(new UserSessions)->delete($userSession->id);
+		}
+		
+		Session::delete(CURRENT_USER_SESSION_NAME);
+		
+		if (Cookie::exists(REMEMBER_ME_COOKIE_NAME))
+		{
+			Cookie::delete(REMEMBER_ME_COOKIE_NAME);
+		}
+		
+		self::$currentLoggedInUser = null;
+		
+		return true;
+	}
+	
+	public function registerNewUser($params)
+	{
+		$this->assign($params);
+		$this->deleted = 0;
+		$this->password = password_hash($this->password, PASSWORD_DEFAULT);
+		$this->save();
 	}
 }
