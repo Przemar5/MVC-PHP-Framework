@@ -22,6 +22,11 @@ class DB
 		}
 	}
 	
+	public function debugDumpParams()
+	{
+		return $this->_query->debugDumpParams();
+	}
+	
 	public static function getInstance()
 	{
 		if (!isset(self::$_instance))

@@ -4,5 +4,5 @@
 <?php $this->end(); ?>
 
 <?php $this->start('body'); ?>
-<h1 class="text-center red">Welcome to my MVC framework!</h1>
+<h1 class="text-center red">Welcome to MVC Framework!</h1>
 <?php $this->end(); ?>

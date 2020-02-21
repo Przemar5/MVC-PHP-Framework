@@ -19,8 +19,12 @@
 		<?php echo $this->content('head'); ?>
   	</head>
   	<body>
-		<?php echo $this->content('body'); ?>
-
+  		<?php include_once 'main_menu.php'; ?>
+  		
+  		<div class="container-fluid" style="min-height:calc(100% - 125px);">
+  			<?php echo $this->content('body'); ?>
+  		</div>
+  		
 		<!-- Optional JavaScript -->
 		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
 <!--
