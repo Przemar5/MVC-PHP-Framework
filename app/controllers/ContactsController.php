@@ -13,7 +13,7 @@ class ContactsController extends Controller
 	
 	public function indexAction()
 	{
-		$contacts = $this->ContactsModel->findAllByUserId(currentUser()->id, 
+		$contacts = $this->ContactsModel->findAllByUserId(Users::currentUser()->id, 
 														  ['order' => 'lname, fname']);
 		$this->view->contacts = $contacts;
 		$this->view->render('contacts/index');
@@ -27,12 +27,11 @@ class ContactsController extends Controller
 		if ($_POST)
 		{
 			$contact->assign($_POST);
-			$validation->check($_POST, Contacts::$addValidation);
+			$validation->check($_POST, Contacts::$addValidation, true);
 			
 			if ($validation->passed())
 			{
-				$contact->user_id = currentUser()->id;
-				$contact->deleted = 0;
+				$contact->user_id = Users::currentUser()->id;
 				$contact->save();
 
 				Router::redirect('contacts');
@@ -45,8 +44,56 @@ class ContactsController extends Controller
 		$this->view->render('contacts/add');
 	}
 	
-	public function saveAction()
+	public function detailsAction($id)
 	{
+		$contact = $this->ContactsModel->findByIdAndUserId((int) $id, Users::currentUser()->id);
 		
+		if (!$contact)
+		{
+			Router::redirect('contacts');
+		}
+		$this->view->contact = $contact;
+		$this->view->render('contacts/details');
+	}
+	
+	public function editAction($id)
+	{
+		$contact = $this->ContactsModel->findByIdAndUserId((int) $id, Users::currentUser()->id);
+		
+		if (!$contact)
+		{
+			Router::redirect('contacts');
+		}
+		
+		$validation = new Validate;
+		
+		if ($_POST)
+		{
+			$validation->check($_POST, Contacts::$addValidation, true);
+			
+			if ($validation->passed())
+			{
+				$this->ContactsModel->update($contact->id, $_POST);
+				
+				Router::redirect('contacts');
+			}
+		}
+		
+		$this->view->displayErrors = $validation->displayErrors();
+		$this->view->contact = $contact;
+		$this->view->postAction = PROOT . 'contacts' . DS . 'edit' . DS . $contact->id;
+		$this->view->render('contacts/edit');
+	}
+	
+	public function deleteAction($id)
+	{
+		$contact = $this->ContactsModel->findByIdAndUserId((int) $id, Users::currentUser()->id);
+		
+		if ($contact)
+		{
+			$this->ContactsModel->delete($contact->id);
+		}
+		
+		Router::redirect('contacts');
 	}
 }

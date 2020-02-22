@@ -11,18 +11,26 @@ class Validate
 		$this->_db = DB::getInstance();
 	}
 	
-	public function check($source, $items = [])
+	public function check($source, $items = [], $csrfCheck = false)
 	{
 		$this->_errors = [];
 		
+		if ($csrfCheck)
+		{
+			if (!isset($source['csrf_token']) || !FormHelper::checkToken($source['csrf_token']))
+			{
+				$this->addError(['Something has gone wrong.', 'csrf_token']);
+			}
+		}
+		
 		foreach ($items as $item => $rules)
 		{
-			$item = Input::sanitize($item);
+			$item = FormHelper::sanitize($item);
 			$display = $rules['display'];
 			
 			foreach ($rules as $rule => $ruleValue)
 			{
-				$value = Input::sanitize(trim($source[$item]));
+				$value = FormHelper::sanitize(trim($source[$item]));
 				
 				if ($rule === 'required' && empty($value))
 				{

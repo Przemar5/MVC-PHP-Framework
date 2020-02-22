@@ -4,6 +4,8 @@
 <?php $this->start('body'); ?>
 <div class="col-md-6 offset-md-3 card bg-light">
 	<form action="<?php echo PROOT; ?>register/login" method="post" class="form card-body">
+		<?php echo FormHelper::csrfInput(); ?>
+		
 		<div>
 			<?php echo $this->displayErrors; ?>
 		</div>

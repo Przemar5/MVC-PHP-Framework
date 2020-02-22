@@ -28,7 +28,7 @@ class RegisterController extends Controller
 					'required' => true,
 					'min' => 6
 				]
-			]);
+			], true);
 			
 			if ($validation->passed())
 			{
@@ -56,9 +56,9 @@ class RegisterController extends Controller
 	
 	public function logoutAction()
 	{
-		if (currentUser())
+		if (Users::currentUser())
 		{
-			currentUser()->logout();
+			Users::currentUser()->logout();
 		}
 		
 		Router::redirect('register/login');
@@ -66,65 +66,21 @@ class RegisterController extends Controller
 	
 	public function registerAction()
 	{
-		$validation = new Validate;
-		$posted_values = [
-			'fname' => '',
-			'lname' => '',
-			'username' => '',
-			'email' => '',
-			'password' => '',
-			'confirm' => '',
-		];
+		$newUser = new Users;
 		
 		if ($_POST)
 		{
-			$posted_values = posted_values($_POST);
-			$validation->check($_POST, [
-				'fname' => [
-					'display' => 'First name',
-					'required' => true
-				],
-				'lname' => [
-					'display' => 'Last name',
-					'required' => true
-				],
-				'email' => [
-					'display' => 'Email',
-					'required' => true,
-					'unique' => 'users',
-					'max' => 150,
-					'valid_mail' => true
-				],
-				'username' => [
-					'display' => 'Username',
-					'required' => true,
-					'unique' => 'users',
-					'min' => 6,
-					'max' => 150
-				],
-				'password' => [
-					'display' => 'Password',
-					'required' => true,
-					'min' => 6
-				],
-				'confirm' => [
-					'display' => 'Confirm password',
-					'required' => true,
-					'matches' => 'password'
-				]
-			]);
+			$newUser->assign($_POST);
+			$newUser->setConfirm(Input::get('confirm'));
+//			$newUser->registerNewUser($_POST);
 			
-			if ($validation->passed())
+			if ($newUser->save())
 			{
-				$newUser = new Users;
-				$newUser->registerNewUser($_POST);
-//				$newUser->login();
-
 				Router::redirect('register/login');
 			}
 		}
-		$this->view->post = $posted_values;
-		$this->view->displayErrors = $validation->displayErrors();
+		$this->view->newUser = $newUser;
+		$this->view->displayErrors = $newUser->getErrorMessages();
 		$this->view->render('register/register');
 	}
 }

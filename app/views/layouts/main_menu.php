@@ -1,6 +1,6 @@
 <?php 
 	$menu = Router::getMenu('menu_acl');
-	$currentPage = currentPage();//dnd($menu);
+	$currentPage = Helper::currentPage();//dnd($menu);
 ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   	<a class="navbar-brand" href="<?php echo PROOT; ?>">
@@ -46,10 +46,10 @@
 			<?php endforeach; ?>
 		</ul>
 		<ul class="navbar-nav navbar-right">
-			<?php if (currentUser()): ?>
+			<?php if (Users::currentUser()): ?>
 				<li class="nav-item <?php echo $active; ?>">
 					<a class="nav-link" href="<?php echo $value; ?>">
-						Hello <?php echo currentUser()->fname; ?>
+						Hello <?php echo Users::currentUser()->fname; ?>
 					</a>
 				</li>
 			<?php endif; ?>

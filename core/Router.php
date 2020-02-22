@@ -70,7 +70,7 @@ class Router
 		{
 			$currentUserAcls[] = 'LoggedIn';
 			
-			foreach (currentUser()->acls() as $a)
+			foreach (Users::currentUser()->acls() as $a)
 			{
 				$currentUserAcls[] = $a;
 			}
