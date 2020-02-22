@@ -68,11 +68,11 @@ class RegisterController extends Controller
 	{
 		$newUser = new Users;
 		
-		if ($_POST)
+		if ($this->request->isPost())
 		{
-			$newUser->assign($_POST);
-			$newUser->setConfirm(Input::get('confirm'));
-//			$newUser->registerNewUser($_POST);
+			$this->request->csrfCheck();
+			$newUser->assign($this->request->get());
+			$newUser->setConfirm($this->request->get('confirm'));
 			
 			if ($newUser->save())
 			{

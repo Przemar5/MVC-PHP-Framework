@@ -147,7 +147,7 @@ class Model
 			{
 				if (property_exists($this, $key))
 				{
-					$this->$key = FormHelper::sanitize($value);
+					$this->$key = $value;
 				}
 			}
 			return true;
