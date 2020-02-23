@@ -1,5 +1,7 @@
 <?php
 
+namespace Core;
+
 
 class Model 
 {
@@ -77,14 +79,22 @@ class Model
 		
 		if ($this->_validates)
 		{
+			$this->beforeSave();
 			$fields = Helper::getObjectProperties($this);
 
 			// Determine whether to update or insert
 			if (property_exists($this, 'id') && $this->id != '')
 			{
-				return $this->update($this->id, $fields);
+				$save = $this->update($this->id, $fields);
 			}
-			return $this->insert($fields);
+			else
+			{
+				$save = $this->insert($fields);
+			}
+			
+			$this->afterSave();
+
+			return $save;
 		}
 		return false;
 	}
@@ -193,5 +203,20 @@ class Model
 	{
 		$this->_validates = false;
 		$this->_validationErrors[$field] = $msg;
+	}
+	
+	public function beforeSave() 
+	{
+		
+	}
+	
+	public function afterSave() 
+	{
+		
+	}
+	
+	public function isNew()
+	{
+		return (property_exists($this, 'id') && !empty($this->id)) ? false : true;
 	}
 }

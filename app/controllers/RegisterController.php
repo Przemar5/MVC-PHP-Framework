@@ -1,5 +1,11 @@
 <?php
 
+namespace App\Controllers;
+use Core\Controller;
+use Core\Router;
+use App\Models\Users;
+use App\Models\Login;
+
 
 class RegisterController extends Controller
 {
@@ -13,44 +19,34 @@ class RegisterController extends Controller
 	
 	public function loginAction()
 	{
-		$validation = new Validate;
+		$loginModel = new Login;
 		
-		if ($_POST)
+		if ($this->request->isPost())
 		{
 			// Form validation
-			$validation->check($_POST, [
-				'username' => [
-					'display' => 'Username',
-					'required' => true
-				],
-				'password' => [
-					'display' => 'Password',
-					'required' => true,
-					'min' => 6
-				]
-			], true);
+			$this->request->csrfCheck();
+			$loginModel->assign($this->request->get());
 			
-			if ($validation->passed())
+			if ($loginModel->validationPassed())
 			{
 				$user = $this->UsersModel->findByUsername($_POST['username']);
-				
-				if ($user && password_verify(Input::get('password'), $user->password) /* Input::get('password') == $user->password*/)
+
+				if ($user && password_verify($this->request->get('password'), $user->password) /* Input::get('password') == $user->password*/)
 				{
-					$remember = (isset($_POST['remember_me']) && Input::get('remember_me'))
-						? true : false;
-					$this->UsersModel->login($remember, $user->id);
-//					$user->login($remember, $user->id);
-					
+					$remember = $loginModel->getRememberMeChecked();
+					$user->login($remember, $user->id);
+
 					Router::redirect('');
 				}
 				else 
 				{
-					$validation->addError('There is an error with your username or password.');
+					$loginModel->addErrorMessage('username', 'There is an error with your username or password.');
 				}
 			}
 		}
 		
-		$this->view->displayErrors = $validation->displayErrors();
+		$this->view->login = $loginModel;
+		$this->view->displayErrors = $loginModel->getErrorMessages();
 		$this->view->render('register/login');
 	}
 	

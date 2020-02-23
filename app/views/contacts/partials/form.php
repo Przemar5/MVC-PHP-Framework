@@ -1,7 +1,12 @@
+<?php
+
+use Core\FormHelper;
+
+?>
+
+
 <form action="<?php echo $this->postAction; ?>" method="post" class="form">
-	<div class="bg-light form-errors">
-		<?php echo $this->displayErrors; ?>
-	</div>
+	<?php echo FormHelper::displayErrors($this->displayErrors); ?>
 	
 	<div class="row">
 		<?php echo FormHelper::csrfInput(); ?>

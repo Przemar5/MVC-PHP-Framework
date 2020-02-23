@@ -1,3 +1,10 @@
+<?php
+
+use Core\Session;
+
+?>
+
+
 <!doctype html>
 <html lang="en">
   	<head>
@@ -22,6 +29,7 @@
   		<?php include_once 'main_menu.php'; ?>
   		
   		<div class="container-fluid" style="min-height:calc(100% - 125px);">
+  			<?php echo Session::displayMessage(); ?>
   			<?php echo $this->content('body'); ?>
   		</div>
   		

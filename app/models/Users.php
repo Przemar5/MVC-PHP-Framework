@@ -1,5 +1,18 @@
 <?php
 
+namespace App\Models;
+use Core\Model;
+use App\Models\Users;
+use App\Models\UserSessions;
+use Core\Cookie;
+use Core\Session;
+use Core\Validators\RequiredValidator;
+use Core\Validators\MinValidator;
+use Core\Validators\MaxValidator;
+use Core\Validators\EmailValidator;
+use Core\Validators\MatchesValidator;
+use Core\Validators\UniqueValidator;
+
 
 class Users extends Model
 {
@@ -26,14 +39,14 @@ class Users extends Model
 				$u = $this->_db->findFirst('users', [
 					'conditions' => 'id = ?',
 					'bind' => [$user]
-				], 'Users');
+				], 'App\Models\Users');
 			}
 			else
 			{
 				$u = $this->_db->findFirst('users', [
 					'conditions' => 'username = ?',
 					'bind' => [$user]
-				], 'Users');
+				], 'App\Models\Users');
 			}
 			
 			if ($u)
@@ -92,11 +105,23 @@ class Users extends Model
 			'rule' => 6,
 			'msg' => 'Password must be at least 6 characters.'
 		]));
-		$this->runValidation(new MatchesValidator($this, [
-			'field' => 'password',
-			'rule' => $this->_confirm,
-			'msg' => 'Your passwords do not match.'
-		]));
+		
+		if ($this->isNew())
+		{
+			$this->runValidation(new MatchesValidator($this, [
+				'field' => 'password',
+				'rule' => $this->_confirm,
+				'msg' => 'Your passwords do not match.'
+			]));
+		}
+	}
+	
+	public function beforeSave()
+	{
+		if ($this->isNew())
+		{
+			$this->password = password_hash($this->password, PASSWORD_DEFAULT);
+		}
 	}
 	
 	public function findByUsername($username)
@@ -118,15 +143,9 @@ class Users extends Model
 		return self::$currentLoggedInUser;
 	}
 	
-	public function login($rememberMe = false, $userId = null)
+	public function login($rememberMe = false)
 	{
-		// Temp, becouse of a bug
-		$this->_sessionName = CURRENT_USER_SESSION_NAME;
-		$this->_cookieName = REMEMBER_ME_COOKIE_NAME;
-		// END
-		$this->id = $userId;
-		
-		Session::set($this->_sessionName, $userId);
+		Session::set($this->_sessionName, $this->id);
 		
 		if ($rememberMe)
 		{
@@ -137,12 +156,12 @@ class Users extends Model
 			$fields = [
 				'session' => $hash,
 				'user_agent' => $user_agent,
-				'user_id' => $userId,
+				'user_id' => $this->id,
 			];
 			$this->_db->query(
 				'DELETE FROM user_sessions WHERE user_id = ? AND user_agent = ?',
 				[
-					$userId,
+					$this->id,
 					$user_agent
 				]);
 			$this->_db->insert('user_sessions', $fields);
@@ -153,17 +172,19 @@ class Users extends Model
 	{
 		$userSession = UserSessions::getFromCookie();
 		
-		if ($userSession->user_id != '')
+		if ($userSession && $userSession->user_id != '')
 		{
 			$user = new self((int) $userSession->user_id);
-		}
-		
-		if ($user)
-		{
-			$user->login();
-
+			
+			if ($user)
+			{
+				$user->login();
+			}
+			
 			return $user;
 		}
+		
+		return;
 	}
 	
 	public function logout()
@@ -187,13 +208,13 @@ class Users extends Model
 		return true;
 	}
 	
-	public function registerNewUser($params)
-	{
-		$this->assign($params);
-		$this->deleted = 0;
-		$this->password = password_hash($this->password, PASSWORD_DEFAULT);
-		$this->save();
-	}
+//	public function registerNewUser($params)
+//	{
+//		$this->assign($params);
+//		$this->deleted = 0;
+//		$this->password = password_hash($this->password, PASSWORD_DEFAULT);
+//		$this->save();
+//	}
 	
 	public function acls()
 	{

@@ -1,5 +1,8 @@
 <?php
 
+namespace Core;
+use Core\Application;
+
 
 class Controller extends Application
 {
@@ -18,9 +21,21 @@ class Controller extends Application
 	
 	protected function load_model($model)
 	{
-		if (class_exists($model))
+		$modelPath = 'App\Models\\' . $model;
+		
+		if (class_exists($modelPath))
 		{
-			$this->{$model . 'Model'} = new $model(strtolower($model));
+			$this->{$model . 'Model'} = new $modelPath;
 		}
+	}
+	
+	public function jsonResponse($response)
+	{
+		header('Access-Control-Allow-Origin: *');
+		header('Contrent-Type: application/json; charset=UTF-8');
+		http_response_code(200);
+		echo json_encode($response);
+		
+		exit;
 	}
 }

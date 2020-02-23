@@ -1,5 +1,7 @@
 <?php
 
+namespace Core;
+
 
 class Session
 {
@@ -33,5 +35,38 @@ class Session
 		$newString = preg_replace($regex, '', $uagent);
 		
 		return $newString;
+	}
+	
+	public static function addMessage($type, $msg)
+	{
+		$sessionName = 'alert-' . $type;
+		
+		self::set($sessionName, $msg);
+	}
+	
+	public static function displayMessage()
+	{
+		$alerts = [
+			'alert-info',
+			'alert-success',
+			'alert-warning',
+			'alert-danger',
+		];
+		$html = '';
+		
+		foreach ($alerts as $alert)
+		{
+			if (self::exists($alert))
+			{
+				$html .= '<div class="alert ' . $alert . ' alert-dismissible" role="alert">';
+				$html .= '<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>';
+				$html .= self::get($alert);
+				$html .= '</div>';
+				
+				self::delete($alert);
+			}
+		}
+		
+		return $html;
 	}
 }

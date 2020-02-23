@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Models;
+use Core\Model;
+use Core\Validators\RequiredValidator;
+use Core\Validators\MaxValidator;
+
 
 class Contacts extends Model
 {
@@ -28,6 +33,28 @@ class Contacts extends Model
 			'max' => 155
 		],
 	];
+	
+	public function validator()
+	{
+		$this->runValidation(new RequiredValidator($this, [
+			'field' => 'fname',
+			'msg' => 'First name is required.'
+		]));
+		$this->runValidation(new MaxValidator($this, [
+			'field' => 'fname',
+			'rule' => 155,
+			'msg' => 'First name must be less than 156 character.'
+		]));
+		$this->runValidation(new RequiredValidator($this, [
+			'field' => 'lname',
+			'msg' => 'Last name is required.'
+		]));
+		$this->runValidation(new MaxValidator($this, [
+			'field' => 'lname',
+			'rule' => 155,
+			'msg' => 'Last name must be less than 156 character.'
+		]));
+	}
 	
 	public function findAllByUserId($userId, $params = [])
 	{

@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Models;
+use Core\Model;
+use Core\Session;
+use Core\Cookie;
+
 
 class UserSessions extends Model
 {
@@ -31,6 +36,7 @@ class UserSessions extends Model
 		{
 			return false;
 		}
+		
 		return $userSession;
 	}
 	

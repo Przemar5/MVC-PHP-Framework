@@ -1,5 +1,9 @@
 <?php
 
+namespace Core;
+use \PDO;
+use \PDOException;
+
 
 class DB
 {
@@ -37,7 +41,7 @@ class DB
 		return self::$_instance;
 	}
 	
-	public function query($sql, $params = [], $class = '')
+	public function query($sql, $params = [], $class = false)
 	{
 		$this->_error = false;
 		
